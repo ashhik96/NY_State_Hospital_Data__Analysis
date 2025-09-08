@@ -51,7 +51,7 @@ The project demonstrates SQL techniques such as:
 
 ### 🏥 Inpatient (SPARCS 2022)
 - **What are the most common reasons for admission?**  
-  Birth-related discharges (normal newborns and neonatal intensive care), Vaginal Delivery, and Severe Infections such as Septicemia are the top drivers of inpatient stays.  
+  Birth-related hospitalizations (normal newborns and neonatal intensive care), Vaginal Delivery, and Severe Infections such as Septicemia are the top drivers of inpatient stays.  
 - **How long do patients stay?**  
   Average hospital stay ranges from **~3 days for mild cases** to **over 14 days for the most severe cases**.  
 - **What drives high hospital costs?**  
