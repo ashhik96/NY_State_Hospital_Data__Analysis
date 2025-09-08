@@ -17,7 +17,7 @@ The project demonstrates SQL skills in:
 
 ## 📂 Dataset Sources
 - [SPARCS Inpatient Discharges (De-Identified, 2022)](https://health.data.ny.gov/Health/Hospital-Inpatient-Discharges-SPARCS-De-Identified/5dtw-tffi)  
-- [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/Health/Hospital-Emergency-Department-Discharges-SPARCS-De-Identified/66i9-6g3e)  
+- [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/Health/Hospital-Emergency-Department-Discharges-SPARCS-De/5gzv-zv2z/about_data)  
 - [CMS Hospital General Information](https://data.cms.gov/provider-data/dataset/xubh-q36u)  
 
 ---
