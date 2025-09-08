@@ -17,7 +17,7 @@ The project demonstrates SQL skills in:
 
 ## 📂 Dataset Sources
 - [SPARCS Inpatient Discharges (De-Identified, 2022)](https://health.data.ny.gov/Health/Hospital-Inpatient-Discharges-SPARCS-De-Identified/5dtw-tffi)  
-- [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/Health/Hospital-Emergency-Department-Discharges-SPARCS-De/5gzv-zv2z)  
+- [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/d/5gzv-zv2z)  
 - [CMS Hospital General Information](https://data.cms.gov/provider-data/dataset/xubh-q36u)  
 
 ---
@@ -86,8 +86,11 @@ FROM sparcs_inpatient_2022 i
 JOIN cms_hospitals c
   ON UPPER(TRIM(i.facility_name)) = UPPER(TRIM(c.hospital_name))
 GROUP BY c.hospital_type
-ORDER BY admission_count DESC;
+ORDER BY admission_count DESC; 
 
-
+## 👤 Author
+**Ashik Rahman**  
+- [LinkedIn](https://www.linkedin.com/in/ashik-rahman-998364379)  
+- [GitHub](https://github.com/ashhik96)  
 
 
