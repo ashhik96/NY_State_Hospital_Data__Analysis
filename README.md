@@ -15,6 +15,8 @@ The project demonstrates SQL techniques such as:
 ---
 
 ## 📂 Dataset Sources
+**Note:** If clicking a link results in an error, please right-click/drag it to a new tab.
+
 - [SPARCS Inpatient Discharges (De-Identified, 2022)](https://health.data.ny.gov/Health/Hospital-Inpatient-Discharges-SPARCS-De-Identified/5dtw-tffi)
 - [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/d/5gzv-zv2z)
 - [CMS Hospital General Information](https://data.cms.gov/provider-data/dataset/xubh-q36u)
@@ -44,30 +46,30 @@ The project demonstrates SQL techniques such as:
 ## 🔍 Key Insights
 
 ### 🏥 Inpatient (SPARCS 2022)
-- **What are the most common reasons for admission?**
-  Neonates, Vaginal Delivery, and Septicemia account for the largest share of inpatient stays.
-- **How long do patients stay?**
-  Average length of stay ranges from **2.9 days (Minor severity)** to **14.2 days (Extreme severity)**.
-- **What drives high hospital costs?**
-  Specialized procedures such as transplants, ECMO, and neonatal intensive care drive **multi-million dollar average charges**.
-- **Who pays for care?**
-  Medicaid and Medicare are the top payers, though **50%+ of cases report unknown/unreported payer information**.
+- **What are the most common reasons for admission?**  
+  Birth-related discharges (normal newborns and neonatal intensive care), Vaginal Delivery, and Severe Infections such as Septicemia are the top drivers of inpatient stays.  
+- **How long do patients stay?**  
+  Average hospital stay ranges from **~3 days for mild cases** to **over 14 days for the most severe cases**.  
+- **What drives high hospital costs?**  
+  Rare, highly specialized procedures such as **heart/lung transplants, ECMO (artificial heart-lung support), and neonatal intensive care** drive **multi-million dollar average charges per admission**.  
+- **Who pays for care?**  
+  Medicaid and Medicare are the top payers, but over **50% of cases are reported with “unknown/unreported” payer information**, limiting transparency in financial data.  
 
 ### 🚑 Emergency Department
-- **How many visits occur statewide?**
-  New York reported **30.6M ED encounters** in 2022.
-- **Which hospitals see the highest volumes?**
-  NY–Presbyterian, Lincoln Medical, and Elmhurst Hospital lead in ED volume.
-- **What percentage of ED visits result in admission?**
-  Roughly **16.8%** of ED encounters required inpatient admission.
-- **Are seasonal trends available?**
-  Quarterly data was not provided in the summary dataset — only annual totals are available.
+- **How many visits occur statewide?**  
+  New York reported **30.6M ED visits** in 2022.  
+- **Which hospitals see the highest volumes?**  
+  Large urban hospitals like **NY–Presbyterian, Lincoln Medical, and Elmhurst Hospital** lead in ED volume.  
+- **What percentage of ED visits result in admission?**  
+  Roughly **17% of ED encounters required inpatient admission**, showing the critical role EDs play in hospital utilization.  
+- **Are seasonal trends available?**  
+  Quarterly data was **not provided** in the summary dataset — only annual totals are available.  
 
 ### 🏥 CMS Linkages
-- **How do hospital ownership types compare in costs?**
-  Local government hospitals have the highest average charges (~$39K), while proprietary hospitals average around ~$12K.
-- **How do hospital types compare in admissions?**
-  Acute Care Hospitals dominate with **1.12M+ admissions**, followed by Psychiatric and Critical Access hospitals.
+- **How do hospital ownership types compare in costs?**  
+  **Local government hospitals** have the highest average charges (~$39K), while **for-profit (proprietary) hospitals** average closer to ~$12K per admission.  
+- **How do hospital types compare in admissions?**  
+  **Acute Care Hospitals** dominate with **1.12M+ admissions**, while **Psychiatric** and **Critical Access hospitals** serve smaller but important patient groups.  
 
 ---
 
