@@ -61,7 +61,11 @@ GROUP BY apr_drg_description
 ORDER BY admission_count DESC
 LIMIT 10;
 
--- Statewide ED Admission Rate
-SELECT SUM(ed_encounters_admitted_inpatient) / SUM(total_ed_encounters) * 100 AS admit_rate_pct
-FROM sparcs_ed_2022
-WHERE year = 2022;
+-- Admissions by Hospital Type
+SELECT c.hospital_type, COUNT(*) AS admission_count
+FROM sparcs_inpatient_2022 i
+JOIN cms_hospitals c
+  ON UPPER(TRIM(i.facility_name)) = UPPER(TRIM(c.hospital_name))
+GROUP BY c.hospital_type
+ORDER BY admission_count DESC;
+
