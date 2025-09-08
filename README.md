@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/239979bf-74c0-4990-b962-865439bede88" alt="Healthcare Icon" width="150"/>
+  <img src="https://github.com/user-attachments/assets/52ddf28e-fc92-49fa-b542-e83cd9bdece4" alt="Healthcare Icon" width="150"/>
 </p>
 
 # New York State Inpatient and Emergency Department Trends (2022)
