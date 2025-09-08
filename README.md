@@ -23,11 +23,11 @@ The project demonstrates SQL skills in:
 ---
 
 ## ⚙️ Project Pipeline
-1. **Schema Creation** → `01_schema.sql`  
+1. **Schema Creation** → `Schema.sql`  
    - Defines tables for Inpatient, ED, and CMS datasets.  
-2. **Data Cleaning & Indexing** → `02_cleaning.sql`  
+2. **Data Cleaning & Indexing** → `Cleaning.sql`  
    - Cleans charges/costs, replaces invalid values, and adds indexes.  
-3. **Analysis Queries** → `03_analysis_queries.sql`  
+3. **Analysis Queries** → `Analysis.sql`  
    - SQL queries to extract insights from inpatient, ED, and CMS data.  
 
 ---
