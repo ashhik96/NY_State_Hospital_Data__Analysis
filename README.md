@@ -1,4 +1,8 @@
-# New York State Healthcare Data Analysis: Inpatient and Emergency Department Trends (2022)
+<p align="center">
+  <img src="file:///C:/Users/drrahman/Downloads/hospital.svg" alt="Healthcare Icon" width="150"/>
+</p>
+
+# New York State Inpatient and Emergency Department Trends (2022)
 
 ## 📌 Project Overview
 This project analyzes **New York State healthcare data** using **MySQL**, focusing on:
