@@ -62,6 +62,11 @@ The project demonstrates SQL skills in:
 
 ---
 
+## 📌 Limitations
+- ED dataset is summary-level only (no patient demographics).
+- CMS linkage via facility_name not perfect (naming differences across datasets).
+- Large number of unknown/unreported payers in SPARCS data.
+
 ## 📜 Example Queries
 ```sql
 -- Top 10 Conditions Driving Admissions
@@ -81,8 +86,6 @@ JOIN cms_hospitals c
 GROUP BY c.hospital_type
 ORDER BY admission_count DESC;
 
----
 
-## 📌 Limitations
 
 
