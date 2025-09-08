@@ -5,7 +5,7 @@ This project analyzes **New York State healthcare data** using **MySQL**.
 The focus is on:
 - **Inpatient hospital discharges (SPARCS 2022)**  
 - **Emergency Department (ED) encounters (SPARCS 2022 summary data)**  
-- **Hospital General Information (CMS)**  
+- **Hospital General Information (CMS = Centers for Medicare & Medicaid Services)**  
 
 The project demonstrates SQL skills in:
 - Data cleaning and schema design  
@@ -16,8 +16,8 @@ The project demonstrates SQL skills in:
 ---
 
 ## 📂 Dataset Sources
-- [SPARCS Inpatient Discharges (De-Identified, 2022)](https://health.data.ny.gov/Health/Hospital-Inpatient-Discharges-SPARCS-De-Identified/5dtw-tffi)
-- [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/Health/Hospital-Emergency-Department-Discharges-SPARCS-De/5gzv-zv2z)
+- [SPARCS Inpatient Discharges (De-Identified, 2022)](https://health.data.ny.gov/Health/Hospital-Inpatient-Discharges-SPARCS-De-Identified/5dtw-tffi)  
+- [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/Health/Hospital-Emergency-Department-Discharges-SPARCS-De/5gzv-zv2z)  
 - [CMS Hospital General Information](https://data.cms.gov/provider-data/dataset/xubh-q36u)  
 
 ---
@@ -25,18 +25,28 @@ The project demonstrates SQL skills in:
 ## ⚙️ Project Pipeline
 1. **Schema Creation** → `Schema.sql`  
    - Defines tables for Inpatient, ED, and CMS datasets.  
+   - Ensures correct column types for millions of rows.  
+   - Provides structure for relational joins later in analysis.  
+
 2. **Data Cleaning & Indexing** → `Cleaning.sql`  
-   - Cleans charges/costs, replaces invalid values, and adds indexes.  
+   - Cleans charges/costs (removes commas, converts to decimals).  
+   - Replaces invalid values (e.g., LOS = 0 set to NULL).  
+   - Adds indexes to improve query performance on large tables.  
+   - Demonstrates SQL cleaning skills with `TRIM`, `UPPER`, and type conversion (`VARCHAR` → `DECIMAL`).  
+
 3. **Analysis Queries** → `Analysis.sql`  
    - SQL queries to extract insights from inpatient, ED, and CMS data.  
+   - Uses `GROUP BY`, `COUNT`, `AVG`, `SUM`, and `ROUND` for KPIs.  
+   - Incorporates `JOIN`s to link inpatient data with CMS attributes.  
+   - Highlights advanced query building with string cleaning + joins (`UPPER(TRIM(...))`).  
 
 ---
 
 ## 🔍 Key Insights
 
 ### 🏥 Inpatient (SPARCS 2022)
-- **Top DRGs by Admissions**: Neonates, Vaginal Delivery, Septicemia dominate admissions.  
-- **Average LOS**: Ranges from **2.9 days (Minor)** to **14.2 days (Extreme)**.  
+- **Top DRGs (Diagnosis Related Groups) by Admissions**: Neonates, Vaginal Delivery, Septicemia dominate admissions.  
+- **Average LOS (Length of Stay)**: Ranges from **2.9 days (Minor)** to **14.2 days (Extreme)**.  
 - **Charges vs Costs**: Specialized cases like transplants/ECMO drive multi-million average charges.  
 - **Payer Mix**: Medicaid + Medicare represent the largest share; 50%+ are “Unknown/Unreported”.  
 
@@ -55,6 +65,7 @@ The project demonstrates SQL skills in:
 ## 📜 Example Queries
 ```sql
 -- Top 10 Conditions Driving Admissions
+
 SELECT apr_drg_description, COUNT(*) AS admission_count
 FROM sparcs_inpatient_2022
 GROUP BY apr_drg_description
@@ -62,10 +73,16 @@ ORDER BY admission_count DESC
 LIMIT 10;
 
 -- Admissions by Hospital Type
+
 SELECT c.hospital_type, COUNT(*) AS admission_count
 FROM sparcs_inpatient_2022 i
 JOIN cms_hospitals c
   ON UPPER(TRIM(i.facility_name)) = UPPER(TRIM(c.hospital_name))
 GROUP BY c.hospital_type
 ORDER BY admission_count DESC;
+
+---
+
+## 📌 Limitations
+
 
