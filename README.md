@@ -69,6 +69,13 @@ The project demonstrates SQL skills in:
 
 ---
 
+## 👤 Author
+**Ashik Rahman**  
+- [LinkedIn](https://www.linkedin.com/in/ashik-rahman-998364379)  
+- [GitHub](https://github.com/ashhik96)
+
+---
+
 ## 📜 Example Queries
 ```sql
 -- Top 10 Conditions Driving Admissions
@@ -87,10 +94,4 @@ JOIN cms_hospitals c
   ON UPPER(TRIM(i.facility_name)) = UPPER(TRIM(c.hospital_name))
 GROUP BY c.hospital_type
 ORDER BY admission_count DESC; 
-
-## 👤 Author
-**Ashik Rahman**  
-- [LinkedIn](https://www.linkedin.com/in/ashik-rahman-998364379)  
-- [GitHub](https://github.com/ashhik96)  
-
 
