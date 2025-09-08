@@ -67,6 +67,8 @@ The project demonstrates SQL skills in:
 - CMS linkage via facility_name not perfect (naming differences across datasets).
 - Large number of unknown/unreported payers in SPARCS data.
 
+---
+
 ## 📜 Example Queries
 ```sql
 -- Top 10 Conditions Driving Admissions
