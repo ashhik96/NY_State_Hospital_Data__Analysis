@@ -11,6 +11,8 @@ GROUP BY apr_drg_description
 ORDER BY admission_count DESC
 LIMIT 10;
 
+-- >>> Birth-related hospitalizations (normal newborns and neonatal intensive care), Vaginal Delivery, and Severe Infections such as Septicemia are the top drivers of inpatient stays.
+
 
 -- 2. Average Length of Stay by Severity
 SELECT apr_severity_of_illness, AVG(length_of_stay) AS avg_los
