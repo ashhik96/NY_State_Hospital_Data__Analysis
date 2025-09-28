@@ -9,6 +9,7 @@ This project analyzes **New York State healthcare data** using **MySQL**, focusi
 - **Inpatient hospital discharges (SPARCS 2022)** → What are the most common reasons for admission? How long do patients stay?
 - **Emergency Department (ED) encounters (SPARCS 2022 summary data)** → How many visits occur statewide? Which hospitals see the highest volumes? What percentage of ED visits result in admission?
 - **Hospital General Information (CMS = Centers for Medicare & Medicaid Services)** → How do hospital types (Acute Care, Psychiatric, Children’s) and ownership (Government, Non-Profit, Proprietary) relate to costs and admissions?
+- The final insights are consolidated and presented in an interactive Tableau dashboard.
 
 The project demonstrates SQL techniques such as:
 - Cleaning and preparing **2M+ inpatient records** for analysis
@@ -18,8 +19,16 @@ The project demonstrates SQL techniques such as:
 
 ---
 
+## 📊 Interactive Tableau Dashboard
+The key findings from this analysis are summarized in an interactive dashboard built with Tableau Public. The dashboard provides a high-level view of inpatient volumes, costs, and key performance indicators across New York State.
+
+**Click the image below to interact with the live dashboard:**
+
+[![Dashboard Preview](dashboard-preview.png)](https://public.tableau.com/app/profile/ashik.rahman8486/viz/NewYorkStateInpatientHospitalTrends/NYINPATIENTTRENDSDASHBOARD)
 ## 📂 Dataset Sources
 **Note:** If clicking a link results in an error, please right-click/drag it to a new tab.
+
+---
 
 - [SPARCS Inpatient Discharges (De-Identified, 2022)](https://health.data.ny.gov/Health/Hospital-Inpatient-Discharges-SPARCS-De-Identified/5dtw-tffi)
 - [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/d/5gzv-zv2z)
@@ -44,6 +53,10 @@ The project demonstrates SQL techniques such as:
    - Uses `GROUP BY`, `COUNT`, `AVG`, `SUM`, and `ROUND` for KPIs.
    - Incorporates `JOIN`s to link inpatient data with CMS attributes.
    - Highlights advanced query building with string cleaning + joins (`UPPER(TRIM(...))`).
+
+4. **Visualization** → Tableau Dashboard
+   - The final insights from the SQL queries were used to create an interactive public-facing dashboard.
+   - Presents key metrics and trends in a clear, accessible format for a non-technical audience.
 
 ---
 
