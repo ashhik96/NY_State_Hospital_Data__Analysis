@@ -2,98 +2,70 @@
   <img src="https://github.com/user-attachments/assets/52ddf28e-fc92-49fa-b542-e83cd9bdece4" alt="Healthcare Icon" width="300"/>
 </p>
 
-# New York State Inpatient and Emergency Department Trends (2022)
+# 🏥New York Inpatient Care (SPARCS 2022) — SQL → Tableau Public Health Dashboard
 
-## 📌 Project Overview
-This project analyzes **New York State healthcare data** using **MySQL**, focusing on:
-- **Inpatient hospital discharges (SPARCS 2022)** → What are the most common reasons for admission? How long do patients stay?
-- **Emergency Department (ED) encounters (SPARCS 2022 summary data)** → How many visits occur statewide? Which hospitals see the highest volumes? What percentage of ED visits result in admission?
-- **Hospital General Information (CMS = Centers for Medicare & Medicaid Services)** → How do hospital types (Acute Care, Psychiatric, Children’s) and ownership (Government, Non-Profit, Proprietary) relate to costs and admissions?
-- The final insights are consolidated and presented in an interactive Tableau dashboard.
+**Live dashboard:** 📊[NY Inpatient Analysis (Tableau Public)](https://public.tableau.com/views/NYHospitalAnalysis/Dashboard5?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
-The project demonstrates SQL techniques such as:
-- Cleaning and preparing **2M+ inpatient records** for analysis
-- Summarizing admissions, payer mix, and costs with `GROUP BY` and aggregations
-- Using `JOIN`s to link SPARCS admissions with CMS hospital characteristics
-- Extracting insights into patient outcomes, hospital utilization, and cost drivers
+![Dashboard Preview](NY%20INPATIENT%20TRENDS%20DASHBOARD.png)   
 
----
+## 📌Project Overview
+This project analyzes **New York State inpatient hospitalizations (SPARCS, 2022)** to uncover patterns in **who is hospitalized, what conditions drive admissions and charges, where patients are located,** and **how costs vary**.
+All raw data was cleaned and transformed in **SQL**, then published into **Tableau Public** for interactive analysis. The aim is to surface **public-health insights** and equity-minded context—not just totals.
+**Primary data source:** Hospital Inpatient Discharges (SPARCS De-Identified), 2022
 
-## 📊 Interactive Tableau Dashboard
-The key findings from this analysis are summarized in an interactive dashboard built with Tableau Public. The dashboard provides a high-level view of inpatient volumes, costs, and key performance indicators across New York State.
+## ⚙️Pipeline (SQL → Tableau)
 
-**Click the image below to interact with the live dashboard:**
+### 1) Schema (`Schema.sql`)
+- Fact table: **`discharges`** (patient demographics, admission/discharge, **primary_diagnosis**, **total_charges**, **length_of_stay**, **payer**, **facility_id**, **admission_date**, **race_ethnicity**, **gender**, **age**).
+- Dimensions: **`facilities`** (`facility_id`, `facility_name`, `county_code`), **`counties`** (`county_code`, `county_name`), **`payers`** (normalized payer categories).
+- Keys: `discharges.facility_id → facilities.facility_id`, `facilities.county_code → counties.county_code`.
+- Performance: create **BTREE indexes** on `primary_diagnosis`, `facility_id`, `county_code`, `admission_date`, plus **low-cardinality** filters (`gender`, `race_ethnicity`) as needed.
 
-[![Dashboard Preview](dashboard-preview.png)](https://public.tableau.com/app/profile/ashik.rahman8486/viz/NewYorkStateInpatientHospitalTrends/NYINPATIENTTRENDSDASHBOARD)
-## 📂 Dataset Sources
-**Note:** If clicking a link results in an error, please right-click/drag it to a new tab.
+### 2) Cleaning & Standardization (`Cleaning.sql`)
+- Convert **Total Charges** → `DECIMAL(12,2)`; **Length of Stay** → `INTEGER`.
+- Normalize **Race/Ethnicity** and **Gender** labels to consistent buckets.
+- Derive **Age Groups** via `CASE WHEN` (0–17, 18–29, 30–44, 45–64, 65+).
+- Handle anomalies (e.g., `length_of_stay <= 0` → `NULL`).
+- Optional: deduplicate facilities by fuzzy/standardized names before counting distinct hospitals.
 
----
+### 3) Analysis (`Analysis.sql`)
+- Use **JOINs**, **GROUP BY**, and **window functions** to produce extracts for Tableau:
+  - **Admissions by primary_diagnosis** (+ average charges, average LOS).
+  - **Admissions by county** and **Admissions per Hospital** (burden).
+  - **Demographic splits**: gender, race/ethnicity, age group.
+  - **Payer mix** shares.
+- Optional engineering touches:
+  - Materialize heavy aggregations into **summary tables**.
+  - **CTEs** for readability; **indexes** on summary keys for fast extracts.
 
-- [SPARCS Inpatient Discharges (De-Identified, 2022)](https://health.data.ny.gov/Health/Hospital-Inpatient-Discharges-SPARCS-De-Identified/5dtw-tffi)
-- [SPARCS Emergency Department Encounters (De-Identified, Summary, 2022)](https://health.data.ny.gov/d/5gzv-zv2z)
-- [CMS Hospital General Information](https://data.cms.gov/provider-data/dataset/xubh-q36u)
+### 4) Visualization (Tableau Public)
+- Ranked bars: **Admissions by Primary Diagnosis**.
+- Bars/labels: **Average Charges** and **Average LOS** by diagnosis.
+- **Map by County** for admissions.
+- **Admissions per Hospital (burden)** bar view.
+- Global filters: **Gender** and **Race/Ethnicity**.
 
----
 
-## ⚙️ Project Pipeline
-1. **Schema Creation** → `Schema.sql`
-   - Defines tables for Inpatient, ED, and CMS datasets.
-   - Ensures correct column types for millions of rows.
-   - Provides structure for relational joins later in analysis.
+## 🔍What the dashboard shows
 
-2. **Data Cleaning & Indexing** → `Cleaning.sql`
-   - Cleans charges/costs (removes commas, converts to decimals).
-   - Replaces invalid values (e.g., LOS = 0 set to NULL).
-   - Adds indexes to improve query performance on large tables.
-   - Demonstrates SQL cleaning skills with `TRIM`, `UPPER`, and type conversion (`VARCHAR` → `DECIMAL`).
+- **Demographics:** Women are hospitalized ~9% more than men; race/ethnicity distribution is diverse with visible disparities.
+- **Age:** Admissions rise with age; **18–29** group has fewer admissions but **higher average charges per stay** in several categories.
+- **Diagnosis & Cost:** High-volume diagnoses differ from **high-charge** or **long-stay** diagnoses.
+- **Geography:** NYC and surrounding counties dominate totals; some counties show **high admissions per hospital** indicating potential strain.
+- **Payers:** Medicare/Medicaid dominate statewide coverage; commercial remains substantial.
 
-3. **Analysis Queries** → `Analysis.sql`
-   - SQL queries to extract insights from inpatient, ED, and CMS data.
-   - Uses `GROUP BY`, `COUNT`, `AVG`, `SUM`, and `ROUND` for KPIs.
-   - Incorporates `JOIN`s to link inpatient data with CMS attributes.
-   - Highlights advanced query building with string cleaning + joins (`UPPER(TRIM(...))`).
 
-4. **Visualization** → Tableau Dashboard
-   - The final insights from the SQL queries were used to create an interactive public-facing dashboard.
-   - Presents key metrics and trends in a clear, accessible format for a non-technical audience.
+## Data notes & limitations
 
----
+- **Charges reflect the entire stay**, not only the admitting diagnosis; complexity/procedures can raise totals.
+- **Unknown/Other** categories (race/ethnicity, payer) can bias distributions.
+- **Admissions per Hospital** uses **distinct facility names**; naming inconsistencies can affect counts.
+- Rare conditions at the county level can produce unstable small-number patterns.
 
-## 🔍 Key Insights
+## Attribution
 
-### 🏥 Inpatient (SPARCS 2022)
-- **What are the most common reasons for admission?**  
-  Birth-related hospitalizations (normal newborns and neonatal intensive care), Vaginal Delivery, and Severe Infections such as Septicemia are the top drivers of inpatient stays.  
-- **How long do patients stay?**  
-  Average hospital stay ranges from **~3 days for mild cases** to **over 14 days for the most severe cases**.  
-- **What drives high hospital costs?**  
-  Rare, highly specialized procedures such as **heart/lung transplants, ECMO (artificial heart-lung support), and neonatal intensive care** drive **multi-million dollar average charges per admission**.  
-- **Who pays for care?**  
-  Medicaid and Medicare are the top payers, but over **50% of cases are reported with “unknown/unreported” payer information**, limiting transparency in financial data.  
-
-### 🚑 Emergency Department
-- **How many visits occur statewide?**  
-  New York reported **30.6M ED visits** in 2022.  
-- **Which hospitals see the highest volumes?**  
-  Large urban hospitals like **NY–Presbyterian, Lincoln Medical, and Elmhurst Hospital** lead in ED volume.  
-- **What percentage of ED visits result in admission?**  
-  Roughly **17% of ED encounters required inpatient admission**, showing the critical role EDs play in hospital utilization.  
-- **Are seasonal trends available?**  
-  Quarterly data was **not provided** in the summary dataset — only annual totals are available.  
-
-### 🏥 CMS Linkages
-- **How do hospital ownership types compare in costs?**  
-  **Local government hospitals** have the highest average charges (~$39K), while **for-profit (proprietary) hospitals** average closer to ~$12K per admission.  
-- **How do hospital types compare in admissions?**  
-  **Acute Care Hospitals** dominate with **1.12M+ admissions**, while **Psychiatric** and **Critical Access hospitals** serve smaller but important patient groups.  
-
----
-
-## 📌 Limitations
-- ED dataset is summary-level only (no patient demographics).
-- CMS linkage via facility_name not perfect (naming differences across datasets).
-- Large number of unknown/unreported payers in SPARCS data.
+- **Data:** NYS DOH — SPARCS Hospital Inpatient Discharges (De-Identified), 2022
+- **Dashboard:** Tableau Public — NY Hospital Analysis
 
 ---
 
@@ -104,21 +76,84 @@ The key findings from this analysis are summarized in an interactive dashboard b
 
 ---
 
-## 📜 Example Queries
-```sql
--- Top 10 Conditions Driving Admissions
+## 📜Example SQL Queries 
 
-SELECT apr_drg_description, COUNT(*) AS admission_count
-FROM sparcs_inpatient_2022
-GROUP BY apr_drg_description
-ORDER BY admission_count DESC
-LIMIT 10;
+```MySQL Workbench (MySQL 8.0+) — Key, complex examples
 
--- Admissions by Hospital Type
+/* 1) Performance prep: high-impact indexes for joins, grouping, and filters */
+CREATE INDEX ix_discharges_admission_date ON discharges (admission_date);
+CREATE INDEX ix_discharges_primary_dx     ON discharges (primary_diagnosis);
+CREATE INDEX ix_discharges_facility_id    ON discharges (facility_id);
+CREATE INDEX ix_facilities_county_code    ON facilities (county_code);
+-- Optional composite for slicers (helps WHERE and GROUP BY on these dims)
+CREATE INDEX ix_discharges_gender_race    ON discharges (gender, race_ethnicity);
 
-SELECT c.hospital_type, COUNT(*) AS admission_count
-FROM sparcs_inpatient_2022 i
-JOIN cms_hospitals c
-  ON UPPER(TRIM(i.facility_name)) = UPPER(TRIM(c.hospital_name))
-GROUP BY c.hospital_type
-ORDER BY admission_count DESC;
+
+
+/* 2) Admissions & Avg Charges/LOS by diagnosis + rank (window function) */
+WITH dx AS (
+  SELECT
+      primary_diagnosis,
+      COUNT(*)                                  AS total_admissions,
+      ROUND(AVG(total_charges), 2)              AS avg_charges,
+      ROUND(AVG(length_of_stay), 1)             AS avg_los
+  FROM discharges
+  GROUP BY primary_diagnosis
+)
+SELECT
+    primary_diagnosis,
+    total_admissions,
+    avg_charges,
+    avg_los,
+    RANK() OVER (ORDER BY total_admissions DESC) AS diagnosis_rank
+FROM dx
+ORDER BY diagnosis_rank;
+
+
+
+/* 3) County burden: Admissions per Hospital + statewide percentile (joins + window) */
+WITH burden AS (
+  SELECT
+      c.county_name,
+      COUNT(*)                                              AS total_admissions,
+      COUNT(DISTINCT f.facility_id)                         AS hospital_count,
+      ROUND(COUNT(*) * 1.0 / NULLIF(COUNT(DISTINCT f.facility_id), 0), 2) AS adm_per_hosp
+  FROM discharges d
+  JOIN facilities f ON d.facility_id = f.facility_id
+  JOIN counties   c ON f.county_code  = c.county_code
+  GROUP BY c.county_name
+)
+SELECT
+    county_name,
+    total_admissions,
+    hospital_count,
+    adm_per_hosp AS admissions_per_hospital,
+    PERCENT_RANK() OVER (ORDER BY adm_per_hosp) AS burden_percentile
+FROM burden
+ORDER BY admissions_per_hospital DESC, total_admissions DESC;
+
+
+
+/* 4) Top 5 diagnoses by county (partitioned ranking for local “Top-N”) */
+WITH county_dx AS (
+  SELECT
+      c.county_name,
+      d.primary_diagnosis,
+      COUNT(*) AS admissions
+  FROM discharges d
+  JOIN facilities f ON d.facility_id = f.facility_id
+  JOIN counties   c ON f.county_code  = c.county_code
+  GROUP BY c.county_name, d.primary_diagnosis
+),
+ranked AS (
+  SELECT
+      county_name,
+      primary_diagnosis,
+      admissions,
+      ROW_NUMBER() OVER (PARTITION BY county_name ORDER BY admissions DESC) AS rn
+  FROM county_dx
+)
+SELECT county_name, primary_diagnosis, admissions
+FROM ranked
+WHERE rn <= 5
+ORDER BY county_name, admissions DESC;
