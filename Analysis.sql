@@ -1,83 +1,122 @@
-USE sparcs_ny;
+USE hospital_sql_analysis;
 
----------------------------------------------------------
--- Inpatient Analytics
----------------------------------------------------------
+SET SQL_MODE = 'STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
--- 1. Top 10 Conditions Driving Admissions
-SELECT apr_drg_description, COUNT(*) AS admission_count
-FROM sparcs_inpatient_2022
-GROUP BY apr_drg_description
-ORDER BY admission_count DESC
-LIMIT 10;
-
-
--- 2. Average Length of Stay by Severity
-SELECT apr_severity_of_illness, AVG(length_of_stay) AS avg_los
-FROM sparcs_inpatient_2022
-WHERE length_of_stay IS NOT NULL
-GROUP BY apr_severity_of_illness
-ORDER BY avg_los DESC;
-
-
--- 3. Charges vs. Costs by Condition (Top 10 by Avg Charges)
-SELECT apr_drg_description,
-       ROUND(AVG(total_charges),2) AS avg_charges,
-       ROUND(AVG(total_costs),2)   AS avg_costs
-FROM sparcs_inpatient_2022
-WHERE total_charges IS NOT NULL AND total_costs IS NOT NULL
-GROUP BY apr_drg_description
-ORDER BY avg_charges DESC
-LIMIT 10;
+/* ---------------------------------------------------------------------
+   1) Admissions, Avg Charges, Avg LOS by Diagnosis
+   - Provides ranking for top drivers
+--------------------------------------------------------------------- */
+WITH dx AS (
+  SELECT
+      primary_diagnosis,
+      COUNT(*)                        AS total_admissions,
+      ROUND(AVG(total_charges),2)     AS avg_charges,
+      ROUND(AVG(length_of_stay),1)    AS avg_los
+  FROM discharges
+  GROUP BY primary_diagnosis
+)
+SELECT
+    primary_diagnosis,
+    total_admissions,
+    avg_charges,
+    avg_los,
+    RANK() OVER (ORDER BY total_admissions DESC) AS diagnosis_rank
+FROM dx
+ORDER BY diagnosis_rank
+LIMIT 50;
 
 
--- 4. Payer Mix Distribution
-SELECT payment_typology_1, COUNT(*) AS cases
-FROM sparcs_inpatient_2022
-GROUP BY payment_typology_1
-ORDER BY cases DESC;
+/* ---------------------------------------------------------------------
+   2) Admissions per Hospital by County (Burden)
+   - Shows total admissions, hospital count, and burden ratio
+--------------------------------------------------------------------- */
+WITH burden AS (
+  SELECT
+      c.county_name,
+      COUNT(*)                              AS total_admissions,
+      COUNT(DISTINCT f.facility_id)         AS hospital_count,
+      ROUND(COUNT(*) * 1.0 / NULLIF(COUNT(DISTINCT f.facility_id),0), 2) AS admissions_per_hospital
+  FROM discharges d
+  JOIN facilities f ON d.facility_id = f.facility_id
+  JOIN counties   c ON f.county_code = c.county_code
+  GROUP BY c.county_name
+)
+SELECT
+    county_name,
+    total_admissions,
+    hospital_count,
+    admissions_per_hospital,
+    PERCENT_RANK() OVER (ORDER BY admissions_per_hospital) AS burden_percentile
+FROM burden
+ORDER BY admissions_per_hospital DESC;
 
----------------------------------------------------------
--- ED Summary Analytics (Annual Totals)
----------------------------------------------------------
 
--- 5. Top Facilities by ED Encounters
-SELECT facility_name, SUM(total_ed_encounters) AS total_encounters
-FROM sparcs_ed_2022
-WHERE year = 2022
-GROUP BY facility_name
-ORDER BY total_encounters DESC
-LIMIT 10;
+/* ---------------------------------------------------------------------
+   3) Demographic Breakdown (Gender × Race/Ethnicity)
+   - Used for Tableau filters and disparity analysis
+--------------------------------------------------------------------- */
+WITH base AS (
+  SELECT
+      gender,
+      race_ethnicity,
+      COUNT(*) AS admissions
+  FROM discharges
+  GROUP BY gender, race_ethnicity
+),
+tot AS (
+  SELECT SUM(admissions) AS N_total FROM base
+)
+SELECT
+    b.gender,
+    b.race_ethnicity,
+    b.admissions,
+    ROUND(100.0 * b.admissions / t.N_total, 2) AS pct_of_total
+FROM base b CROSS JOIN tot t
+ORDER BY b.race_ethnicity, b.gender;
 
--- 6. Statewide ED Admission Rate
-SELECT 
-  SUM(ed_encounters_admitted_inpatient) / SUM(total_ed_encounters) * 100 AS admit_rate_pct
-FROM sparcs_ed_2022
-WHERE year = 2022;
 
--- 7. Statewide Annual ED Encounters
-SELECT year, SUM(total_ed_encounters) AS total_ed
-FROM sparcs_ed_2022
-WHERE year = 2022
-GROUP BY year;
+/* ---------------------------------------------------------------------
+   4) Payer Mix (Share of Admissions by Payer Category)
+--------------------------------------------------------------------- */
+WITH payer_counts AS (
+  SELECT payer, COUNT(*) AS admissions
+  FROM discharges
+  GROUP BY payer
+),
+tot AS (
+  SELECT SUM(admissions) AS N_total FROM payer_counts
+)
+SELECT
+    p.payer,
+    p.admissions,
+    ROUND(100.0 * p.admissions / t.N_total, 2) AS pct_of_total
+FROM payer_counts p CROSS JOIN tot t
+ORDER BY pct_of_total DESC;
 
----------------------------------------------------------
--- CMS-Linked Insights (Join on Facility Name)
----------------------------------------------------------
 
--- 8. Average Charges by Ownership Type
-SELECT c.ownership, ROUND(AVG(i.total_charges),2) AS avg_charges
-FROM sparcs_inpatient_2022 i
-JOIN cms_hospitals c
-  ON UPPER(TRIM(i.facility_name)) = UPPER(TRIM(c.hospital_name))
-WHERE i.total_charges IS NOT NULL
-GROUP BY c.ownership
-ORDER BY avg_charges DESC;
-
--- 9. Admissions by Hospital Type
-SELECT c.hospital_type, COUNT(*) AS admission_count
-FROM sparcs_inpatient_2022 i
-JOIN cms_hospitals c
-  ON UPPER(TRIM(i.facility_name)) = UPPER(TRIM(c.hospital_name))
-GROUP BY c.hospital_type
-ORDER BY admission_count DESC;
+/* ---------------------------------------------------------------------
+   5) Top 5 Diagnoses per County
+   - Partitioned ranking, local “Top-N” insight
+--------------------------------------------------------------------- */
+WITH county_dx AS (
+  SELECT
+      c.county_name,
+      d.primary_diagnosis,
+      COUNT(*) AS admissions
+  FROM discharges d
+  JOIN facilities f ON d.facility_id = f.facility_id
+  JOIN counties   c ON f.county_code = c.county_code
+  GROUP BY c.county_name, d.primary_diagnosis
+),
+ranked AS (
+  SELECT
+      county_name,
+      primary_diagnosis,
+      admissions,
+      ROW_NUMBER() OVER (PARTITION BY county_name ORDER BY admissions DESC) AS rn
+  FROM county_dx
+)
+SELECT county_name, primary_diagnosis, admissions
+FROM ranked
+WHERE rn <= 5
+ORDER BY county_name, admissions DESC;
