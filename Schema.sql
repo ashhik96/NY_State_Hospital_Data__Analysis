@@ -125,7 +125,3 @@ INSERT IGNORE INTO payers (payer_code, display_name) VALUES
   ('Commercial','Commercial'),
   ('Other','Other'),
   ('Unknown','Unknown');
-
--- ============================================================
--- End Schema.sql
--- ============================================================
