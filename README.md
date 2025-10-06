@@ -47,21 +47,27 @@ All raw data was cleaned and transformed in **SQL**, then published into **Table
 - Global filters: **Gender** and **Race/Ethnicity**.
 
 
-## 🔍What the dashboard shows
+## 🔍 What the Dashboard Shows
 
-- **Demographics:** Women are hospitalized ~9% more than men; race/ethnicity distribution is diverse with visible disparities.
-- **Age:** Admissions rise with age; **18–29** group has fewer admissions but **higher average charges per stay** in several categories.
-- **Diagnosis & Cost:** High-volume diagnoses differ from **high-charge** or **long-stay** diagnoses.
-- **Geography:** NYC and surrounding counties dominate totals; some counties show **high admissions per hospital** indicating potential strain.
-- **Payers:** Medicare/Medicaid dominate statewide coverage; commercial remains substantial.
+- **Demographics:** Women are hospitalized about **9% more often** than men. Race and ethnicity patterns reveal a **diverse inpatient population** but also **uneven representation**, highlighting persistent disparities across groups.
 
+- **Age:** Admissions **increase steadily with age**, with older adults driving both **volume and cost**. The **18–29 age group** is a **high-cost outlier**—fewer admissions but disproportionately **higher average charges per stay**.
 
-## Data notes & limitations
+- **Diagnosis & Cost:** **Common conditions** such as childbirth, sepsis, and heart failure dominate admissions, while **high-cost diagnoses** (e.g., transplants, advanced cardiac cases) have **longer stays and greater expense**.  
+  *Other Specified Chronic Arthropathy* shows **high charges despite moderate stay lengths**, suggesting a **billing or procedure-related disparity**.
 
-- **Charges reflect the entire stay**, not only the admitting diagnosis; complexity/procedures can raise totals.
-- **Unknown/Other** categories (race/ethnicity, payer) can bias distributions.
-- **Admissions per Hospital** uses **distinct facility names**; naming inconsistencies can affect counts.
-- Rare conditions at the county level can produce unstable small-number patterns.
+- **Geography:** Hospitalizations and total charges are **concentrated in New York City and nearby counties**. **Monroe County** faces the **greatest strain** (highest admissions per hospital), while **Delaware County** records the **lightest inpatient load**, underscoring **regional capacity gaps**.
+
+---
+
+## ⚙️ Data Notes & Limitations
+
+- **Charges reflect the full hospital stay**, not just the admitting diagnosis; additional procedures and complications can raise total costs.  
+- **Unknown/Other** values in race, ethnicity, or payer fields may introduce bias or underrepresentation.  
+- **Admissions per Hospital** relies on **distinct facility names**; naming inconsistencies (e.g., campuses or merged systems) may affect facility counts.  
+- **Low-volume counties or rare diagnoses** can show unstable averages and should be interpreted cautiously.  
+- Results are based on **total counts**, not population-adjusted rates; adding **county population data** could further clarify per-capita hospitalization patterns.
+
 
 ## Attribution
 
